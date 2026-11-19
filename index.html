@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloudinary Proof of Concept – Holiday Retail Images</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c1f26;
+    --muted: #5d6472;
+    --line: #e4e6eb;
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --accent: #b3261e;
+    --accent-soft: #fbeceb;
+    --green: #1f7a4d;
+    --green-soft: #e6f4ec;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    background: #14171d;
+    color: #fff;
+    padding: 56px 0 48px;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: 12px;
+    font-weight: 600;
+    color: #f2b8b5;
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-family: Fraunces, Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+    margin: 0 0 14px;
+  }
+  header p.lead { color: #c9ccd3; max-width: 700px; font-size: 17px; margin: 0 0 32px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .stat {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .stat b { display: block; font-size: 28px; font-weight: 700; }
+  .stat span { color: #aeb3bd; font-size: 14px; }
+
+  nav.reqs {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(247,246,243,.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.reqs .wrap { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+  nav.reqs a {
+    text-decoration: none; color: var(--ink);
+    font-size: 14px; font-weight: 500;
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--line); background: #fff;
+  }
+  nav.reqs a:hover { border-color: var(--ink); }
+
+  /* Sections */
+  section { padding: 56px 0 8px; }
+  .req-tag {
+    display: inline-block;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; margin-bottom: 10px;
+  }
+  h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 30px; margin: 0 0 8px; }
+  h3 { font-size: 18px; margin: 36px 0 12px; }
+  .intro { color: var(--muted); max-width: 760px; margin: 0 0 24px; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .88em; background: #eceae5; padding: 2px 6px; border-radius: 5px;
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block; font-size: 12px; font-weight: 500;
+    background: #eef0f4; color: #3b4250;
+    padding: 2px 9px; border-radius: 999px; margin-right: 4px;
+  }
+  .saved { color: var(--green); font-weight: 700; }
+  .saved-bg { background: var(--green-soft); }
+
+  /* Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1000px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px)  { .cards { grid-template-columns: 1fr; } }
+  .card .tags { margin-top: 0; }
+  .card {
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .card .img-box {
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card img { width: 100%; max-width: 400px; aspect-ratio: 1 / 1; height: auto; display: block; }
+  .card .meta { padding: 10px 0 0; font-size: 14px; }
+  .card .meta .name { font-weight: 600; font-size: 16px; margin-bottom: 6px; }
+  .card .meta dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }
+  .card .meta dt { color: var(--muted); }
+  .card .meta dd { margin: 0; }
+
+  /* Hero */
+  .hero-frame {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #dde3ea;
+  }
+  .hero-frame img { width: 100%; height: auto; display: block; }
+  .hint {
+    display: flex; gap: 10px; align-items: center;
+    font-size: 14px; color: var(--muted); margin: 12px 0 0;
+  }
+  .crops {
+    display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-end;
+  }
+  .crops figure { margin: 0; }
+  .crops img { height: 240px; width: auto; display: block; border-radius: 10px; border: 1px solid var(--line); }
+  .crops figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
+  .crops figcaption b { color: var(--ink); display: block; font-size: 14px; }
+
+  .bar { height: 8px; background: #eceae5; border-radius: 99px; overflow: hidden; min-width: 120px; }
+  .bar i { display: block; height: 100%; background: var(--green); border-radius: 99px; }
+
+  /* Code / flow */
+  pre {
+    background: #14171d; color: #e6e8ec;
+    padding: 18px 20px; border-radius: 12px;
+    overflow-x: auto; font-size: 13.5px; line-height: 1.6;
+    margin: 0;
+  }
+  pre .c { color: #8b93a3; }
+  pre .k { color: #f2b8b5; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px; margin-top: 8px;
+  }
+  .step {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px;
+  }
+  .step .n {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--ink); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; margin-bottom: 10px;
+  }
+  .step p { margin: 0; font-size: 14px; color: var(--muted); }
+  .step b { display: block; color: var(--ink); margin-bottom: 4px; }
+
+  footer {
+    margin-top: 64px; padding: 28px 0 40px;
+    border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap" style="padding-bottom:56px">
+
+  <!-- REQUIREMENT 2 -->
+  <section id="overlay">
+    <div class="cards">
+      <div class="card">
+        <div class="img-box"><img src="https://res.cloudinary.com/i2k2g4gb/image/upload/c_fill,g_auto,h_400,w_400/b_rgb:000000,c_fit,co_white,l_text:Arial_28_bold:It's%20that%20Time%20of%20Year!,w_380/fl_layer_apply,g_north,y_15/r_30/co_rgb:26344D,e_outline:10/b_rgb:34455D/f_auto,q_auto/Radio?_a=BAMAROUu0" alt="Radio with banner: It's that Time of Year!" loading="lazy"></div>
+        <div class="meta"><div class="tags"><span class="pill">holiday</span><span class="pill">radio</span></div></div>
+      </div>
+      <div class="card">
+        <div class="img-box"><img src="https://res.cloudinary.com/i2k2g4gb/image/upload/c_fill,g_auto,h_400,w_400/b_rgb:D62828,co_white,l_text:Arial_30_bold:Sale%20%24899/fl_layer_apply,g_south_east,x_20,y_20/r_30/co_rgb:D4CACC,e_outline:10/b_rgb:373539/f_auto,q_auto/Necklace?_a=BAMAROUu0" alt="Necklace with badge: Sale $899" loading="lazy"></div>
+        <div class="meta"><div class="tags"><span class="pill">jewelry</span><span class="pill">sale</span></div></div>
+      </div>
+      <div class="card">
+        <div class="img-box"><img src="https://res.cloudinary.com/i2k2g4gb/image/upload/c_fill,g_auto,h_400,w_400/b_rgb:D62828,co_white,l_text:Arial_30_bold:Sale%20%2415%252C000/fl_layer_apply,g_south_east,x_20,y_20/r_30/co_rgb:27272B,e_outline:10/b_rgb:96928E/f_auto,q_auto/Long_ring?_a=BAMAROUu0" alt="Ring with badge: Sale $15,000" loading="lazy"></div>
+        <div class="meta"><div class="tags"><span class="pill">jewelry</span><span class="pill">sale</span></div></div>
+      </div>
+      <div class="card">
+        <div class="img-box"><img src="https://res.cloudinary.com/i2k2g4gb/image/upload/c_fill,g_auto,h_400,w_400/b_rgb:000000,c_fit,co_white,l_text:Arial_28_bold:Hallmark%20Christmas%20Vacation%20One%20Click%20Away,w_380/fl_layer_apply,g_north,y_15/r_30/co_rgb:A7B8CE,e_outline:10/b_rgb:B6C9DB/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0" alt="Mountains with banner: Hallmark Christmas Vacation One Click Away" loading="lazy"></div>
+        <div class="meta"><div class="tags"><span class="pill">christmas</span><span class="pill">vacation</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUIREMENT 3 -->
+  <section id="responsive">
+    <div class="hero-frame">
+      <picture>
+        <source media="(max-width: 600px)" srcset="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_9:16,c_auto,g_auto,w_900/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0">
+        <source media="(max-width: 1024px)" srcset="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_1:1,c_auto,g_auto,w_800/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0">
+        <img src="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_16:9,c_auto,g_auto,w_1600/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0" alt="Snowy mountain holiday scene">
+      </picture>
+    </div>
+    <p class="hint">↔ Resize your browser window: below 1024px wide you'll get the square crop, and below 600px the tall mobile crop.</p>
+
+    <h3>All three crops</h3>
+    <div class="crops">
+      <figure>
+        <img src="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_16:9,c_auto,g_auto,w_1600/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0" alt="16:9 desktop crop" loading="lazy">
+        <figcaption><b>Desktop · 16:9</b>1600 px wide</figcaption>
+      </figure>
+      <figure>
+        <img src="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_1:1,c_auto,g_auto,w_800/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0" alt="1:1 square crop" loading="lazy">
+        <figcaption><b>Square · 1:1</b>800 px wide</figcaption>
+      </figure>
+      <figure>
+        <img src="https://res.cloudinary.com/i2k2g4gb/image/upload/ar_9:16,c_auto,g_auto,w_900/f_auto,q_auto/Mountains_christmas?_a=BAMAROUu0" alt="9:16 mobile crop" loading="lazy">
+        <figcaption><b>Mobile · 9:16</b>900 px wide</figcaption>
+      </figure>
+    </div>
+
+    <h3>Before and after file sizes</h3>
+    <div class="panel table-wrap">
+      <table>
+        <tr><th>Version</th><th>Format</th><th>Pixels</th><th>Size</th><th>Saved</th><th></th></tr>
+        <tr><td><b>Original upload</b></td><td>jpg</td><td>2576 × 1932</td><td>1,067.8 KB</td><td>–</td><td></td></tr>
+        <tr><td>Desktop (16:9)</td><td>image/webp</td><td>1600 wide</td><td>165.4 KB</td><td class="saved">85%</td><td><div class="bar"><i style="width:85%"></i></div></td></tr>
+        <tr><td>Square (1:1)</td><td>image/webp</td><td>800 wide</td><td>68.0 KB</td><td class="saved">94%</td><td><div class="bar"><i style="width:94%"></i></div></td></tr>
+        <tr><td>Mobile (9:16)</td><td>image/webp</td><td>900 wide</td><td>116.0 KB</td><td class="saved">89%</td><td><div class="bar"><i style="width:89%"></i></div></td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>
